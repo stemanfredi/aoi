@@ -19,8 +19,15 @@ Flat layout; six modules + the notebook.
 | `drawables.py` | Sensor archetypes (`ActiveSonar`, `PassiveNode`, `PassiveArray`, `SurveySwath`), annotations (`TextLabel`, `ZonePolygon`), measurements (`DistanceLine`, `AreaPolygon`). All conform to `.draw(ax, to_chart, *, sea_clip, land_obstacles, …)`. |
 | `presets.py`   | Vendor preset catalog + `build_sensor()`. |
 | `fetch.py`     | All data fetchers (bathy / OSMData land / SRTM terrain / OSM features). Disk-cached. |
-| `designer.py`  | ipyleaflet UI; uses `AOISession` directly. |
-| `designer.ipynb` | 3-cell launcher. |
+| `designer.py`  | ipyleaflet UI for the Jupyter notebook path. Uses `AOISession` directly. |
+| `designer.ipynb` | notebook launcher (`%run designer.py` → `launch(…)`). |
+| `app.py`       | Streamlit UI for the web-app path. Same engine, same `AOISession`. |
+
+Two UIs, one engine. Both `designer.py` and `app.py` import only from
+the engine modules (session / render / drawables / presets / fetch);
+their dependency stacks are disjoint (jupyterlab + ipywidgets +
+ipyleaflet vs. streamlit + folium + streamlit-folium). Pick whichever
+host fits the use case; nothing else changes.
 
 Gitignored: `cache/` (incl. the ~1.3 GB OSMData shapefile), `images/`,
 `.env` (holds `OPENTOPOGRAPHY_API_KEY`; template in `.env.example`).

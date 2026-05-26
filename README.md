@@ -23,6 +23,22 @@ the rendered chart, click **Save PNG**.
 On first render the engine auto-downloads the OSMData land-polygons
 shapefile (~700 MB, one-time, cached in `cache/`).
 
+### Alternative: Streamlit web app
+
+Same engine, different shell — a browser app instead of a Jupyter
+notebook. Useful for sharing a stable URL or running headless.
+
+```bash
+.venv/bin/streamlit run app.py
+```
+
+Opens `localhost:8501`. Sidebar holds the controls (title, aspect,
+layer toggles, sensors, measurements, Preview / Save / Download);
+main area is the Leaflet map + the rendered preview image. Sensor
+placement is click-to-add on the map (the notebook's drag-to-move
+markers don't translate to folium; lat/lon is edited in the sidebar
+form instead).
+
 ### Optional: 30 m land-terrain contours
 
 The chart renders without this. For topographic detail on the land
@@ -78,8 +94,9 @@ Flat — everything at the repo root.
 | `drawables.py` | sensor archetypes + annotations + measurements |
 | `presets.py` | vendor preset catalog |
 | `fetch.py` | bathy + OSMData land + SRTM + OSM features |
-| `designer.py` | ipyleaflet UI |
-| `designer.ipynb` | launcher |
+| `designer.py` | ipyleaflet UI (Jupyter notebook path) |
+| `designer.ipynb` | notebook launcher |
+| `app.py` | Streamlit UI (web app path) |
 | `cache/`, `images/`, `.env` | gitignored local state |
 
 See [CLAUDE.md](./CLAUDE.md) for architectural detail.

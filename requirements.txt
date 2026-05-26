@@ -1,6 +1,4 @@
-# Minimum versions only — let pip choose exact ones. Strict version
-# pins (matched to one local .venv) used to fight Colab's pre-installed
-# stack and break the bootstrap; minimums work everywhere.
+# Minimum versions only — let pip pick exact ones.
 
 # Geospatial core
 geopandas>=1.0
@@ -16,10 +14,15 @@ osmnx>=2.0
 # Plotting
 matplotlib
 
-# Interactive designer (local Jupyter)
+# OpenTopography SRTM fetch
+requests
+
+# UI — Jupyter notebook (`jupyter lab designer.ipynb`)
 jupyterlab
 ipywidgets>=8.0
 ipyleaflet>=0.19
 
-# OpenTopography SRTM fetch
-requests
+# UI — Streamlit web app (`streamlit run app.py`)
+streamlit>=1.30
+streamlit-folium>=0.18
+folium>=0.14
