@@ -15,7 +15,7 @@ from typing import List, Optional, Tuple
 from ipyleaflet import (Circle, DrawControl, FullScreenControl, ImageOverlay,
                         Map, Marker, Polygon, Polyline, ScaleControl, basemaps)
 from ipywidgets import (BoundedFloatText, Button, Checkbox, Dropdown,
-                        FloatText, HBox, HTML, Layout, Text, VBox)
+                        FloatText, HBox, HTML, Layout, Tab, Text, VBox)
 from IPython.display import HTML as IPyHTML, display
 
 # Shrink the leaflet-draw vertex / midpoint handles — defaults are ~20 px
@@ -742,17 +742,11 @@ def launch(center: Tuple[float, float] = (41.9028, 12.4964),   # Rome — Europe
         list_box,
     ], layout=Layout(padding="8px"))
 
-    # Flat VBox stack (no Tab, no Accordion). Both compact-container
-    # widgets — that hide some children behind a header — crash inside
-    # Colab's custom-widget-manager CDN bundle with "Cannot read
-    # properties of undefined (reading '0')" during add_child_view.
-    # Stacking everything visible side-steps the bug; the cost is some
-    # vertical scroll in the controls panel.
-    tabs = VBox([
-        HTML("<h4 style='margin:6px 0 4px 0'>Map</h4>"),     map_tab,
-        HTML("<h4 style='margin:6px 0 4px 0'>Measure</h4>"), measure_tab,
-        HTML("<h4 style='margin:6px 0 4px 0'>Sensors</h4>"), sensors_tab,
-    ], layout=Layout(width="100%"))
+    tabs = Tab(children=[map_tab, measure_tab, sensors_tab],
+               layout=Layout(width="100%"))
+    tabs.set_title(0, "Map")
+    tabs.set_title(1, "Measure")
+    tabs.set_title(2, "Sensors")
 
     # ── Footer (always shown) — Preview + Save + status ───────────────────
     footer = VBox([

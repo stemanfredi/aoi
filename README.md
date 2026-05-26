@@ -1,7 +1,5 @@
 # AOI — Area Of Interest
 
-[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/stemanfredi/aoi/blob/main/designer.ipynb)
-
 Coastal sensor-siting chart generator. Frame an AOI on a Leaflet map,
 drop sensor / measurement primitives, save a publication-grade PNG
 (OSM coastline, IHO isobaths, SRTM land contours, sensor coverage with
@@ -10,20 +8,6 @@ acoustic line-of-sight).
 The reasoning behind the design choices — doctrinal layering, range
 derating, threat archetypes, cartographic conventions, vendor matrix —
 is in [METHODOLOGY.md](./METHODOLOGY.md).
-
-## Try it in Colab (no install)
-
-Click the badge above. The notebook's first cell clones the repo +
-installs deps (~30 s on Colab). The first render fetches the ~700 MB
-OSMData land-polygons shapefile (~3–5 min on Colab's bandwidth);
-re-renders inside the same session are fast. Colab disk is ephemeral,
-so subsequent sessions start cold again — a local install is faster
-if you'll use the tool more than once.
-
-The chart works without any API keys. For optional land-terrain
-contours, grab a free key at
-[opentopography.org/developers](https://opentopography.org/developers)
-and paste it into the bootstrap cell (uncomment the marked line).
 
 ## Quick start
 

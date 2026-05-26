@@ -16,15 +16,10 @@ osmnx>=2.0
 # Plotting
 matplotlib
 
-# Interactive designer.
-# ipywidgets stays on the 7.x protocol (@jupyter-widgets/controls@1.x)
-# because Colab's custom widget manager bundle is still on that
-# version; ipywidgets 8 uses the @2.x protocol and renders blank in
-# Colab. ipyleaflet 0.19+ requires ipywidgets 8, so it follows.
-# We use no 7→8 breaking features.
+# Interactive designer (local Jupyter)
 jupyterlab
-ipywidgets>=7.7,<8
-ipyleaflet>=0.17,<0.19
+ipywidgets>=8.0
+ipyleaflet>=0.19
 
 # OpenTopography SRTM fetch
 requests
