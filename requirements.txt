@@ -1,31 +1,25 @@
-# Pinned from .venv on 2026-05-14 (Python 3.12). Recreate with:
-#   python3.12 -m venv .venv && .venv/bin/pip install -r requirements.txt
+# Minimum versions only — let pip choose exact ones. Strict version
+# pins (matched to one local .venv) used to fight Colab's pre-installed
+# stack and break the bootstrap; minimums work everywhere.
 
 # Geospatial core
-geopandas==1.1.3
-shapely==2.1.2
-pyproj==3.7.2
-rioxarray==0.22.0
-xarray==2026.2.0
-netCDF4==1.7.4
+geopandas>=1.0
+shapely>=2.0
+pyproj>=3.0
+rioxarray>=0.13
+xarray
+netCDF4
 
 # OSM features
-osmnx==2.1.0
+osmnx>=2.0
 
 # Plotting
-matplotlib==3.10.8
-cmocean==4.0.3
+matplotlib
 
-# Numerics
-numpy==2.4.4
-pandas==3.0.2
-scipy==1.17.1
-
-# Interactive designer notebook
-jupyterlab==4.5.7
-ipywidgets==8.1.8
-ipyleaflet==0.20.0
-ipykernel==7.2.0
+# Interactive designer
+jupyterlab
+ipywidgets>=8.0
+ipyleaflet>=0.18
 
 # OpenTopography SRTM fetch
-requests==2.33.1
+requests
