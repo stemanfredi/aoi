@@ -1,0 +1,17 @@
+.venv
+.env
+__pycache__/
+
+# Rendered chart outputs (would reveal AOIs)
+images/
+
+# Bathymetry NetCDFs + osmnx HTTP cache + SRTM TIFFs (regenerated on demand)
+cache/
+
+# nbconvert execution outputs
+*.executed.ipynb
+
+# Claude Code local state — per-user permissions allow-list, never share
+.claude/settings.local.json
+.claude/.nfs*
+.claude/*.lock
