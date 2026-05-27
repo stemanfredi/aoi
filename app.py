@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import base64
 import math
+import os
 import tempfile
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -83,6 +84,16 @@ LAYER_FIELDS = [(label, fld, default)
 
 st.set_page_config(page_title="AOI", layout="wide", page_icon="🗺",
                    initial_sidebar_state="expanded")
+
+# Bridge Streamlit Cloud secrets → os.environ so the engine's env reads
+# (OPENTOPOGRAPHY_API_KEY for terrain, AOI_SIMPLIFIED_LAND for the small
+# land dataset) work when deployed. No-op locally (no secrets file).
+try:
+    for _k in ("OPENTOPOGRAPHY_API_KEY", "AOI_SIMPLIFIED_LAND"):
+        if _k in st.secrets:
+            os.environ[_k] = str(st.secrets[_k])
+except Exception:
+    pass
 
 
 # ── UI-side dataclasses (mutable; converted to engine drawables on render) ─

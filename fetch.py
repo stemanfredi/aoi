@@ -125,40 +125,64 @@ def fetch_bathy(name, sll, nll, wll, ell, *, pad=0.03, source="auto"):
 
 
 # ── OSMData land polygons (the single land/sea authority) ──────────────────
+#
+# Two datasets, chosen at call time by the AOI_SIMPLIFIED_LAND env var:
+#   unset / "0"  → land-polygons-complete-4326 (full detail, WGS84,
+#                  ~700 MB ZIP / ~1.3 GB on disk). The local default.
+#   "1"          → simplified-land-polygons-complete-3857 (~12 MB ZIP,
+#                  Web Mercator, coarser coastline). For memory-limited
+#                  hosts like Streamlit Community Cloud's free tier.
 
-OSMDATA_URL = ("https://osmdata.openstreetmap.de/download/"
-               "land-polygons-complete-4326.zip")
 LAND_DIR = CACHE / "osm_land_polygons"
-LAND_SHP = LAND_DIR / "land_polygons.shp"
+
+
+def _land_dataset():
+    """Return (url, subdir_name, shp_name, epsg) for the active dataset."""
+    if os.environ.get("AOI_SIMPLIFIED_LAND", "0") == "1":
+        return (
+            "https://osmdata.openstreetmap.de/download/"
+            "simplified-land-polygons-complete-3857.zip",
+            "simplified-land-polygons-complete-3857",
+            "simplified_land_polygons.shp",
+            3857,
+        )
+    return (
+        "https://osmdata.openstreetmap.de/download/"
+        "land-polygons-complete-4326.zip",
+        "land-polygons-complete-4326",
+        "land_polygons.shp",
+        4326,
+    )
 
 
 def download_land_polygons(force=False):
-    """Download the OSMData land-polygons-complete-4326 dataset.
+    """Download the active OSMData land-polygons dataset.
 
-    ~700 MB ZIP, ~1.3 GB extracted. One-time; cached under
-    cache/osm_land_polygons/. `force=True` re-downloads to refresh.
-
-    Source + license (ODbL): https://osmdata.openstreetmap.de
+    One-time; cached under cache/osm_land_polygons/. `force=True`
+    re-downloads. Source + license (ODbL): https://osmdata.openstreetmap.de
     """
     import urllib.request
     import zipfile
     import shutil
 
-    if LAND_SHP.exists() and not force:
-        return LAND_SHP
+    url, subdir_name, shp_name, _ = _land_dataset()
+    shp = LAND_DIR / shp_name
+    if shp.exists() and not force:
+        return shp
 
     LAND_DIR.mkdir(parents=True, exist_ok=True)
-    zip_path = LAND_DIR / "land-polygons-complete-4326.zip"
+    zip_path = LAND_DIR / "land.zip"
 
-    print(f"  OSMData: downloading land polygons (~700 MB, one-time) …")
-    print(f"    {OSMDATA_URL}")
-    urllib.request.urlretrieve(OSMDATA_URL, zip_path)
+    size_hint = "~12 MB simplified" if "simplified" in url else "~700 MB full"
+    print(f"  OSMData: downloading land polygons ({size_hint}, one-time) …")
+    print(f"    {url}")
+    urllib.request.urlretrieve(url, zip_path)
 
     print(f"  OSMData: extracting …")
     with zipfile.ZipFile(zip_path) as zf:
         zf.extractall(LAND_DIR)
 
-    subdir = LAND_DIR / "land-polygons-complete-4326"
+    subdir = LAND_DIR / subdir_name
     if subdir.is_dir():
         for f in subdir.iterdir():
             target = LAND_DIR / f.name
@@ -168,8 +192,8 @@ def download_land_polygons(force=False):
         subdir.rmdir()
 
     zip_path.unlink()
-    print(f"  OSMData: cached at {LAND_SHP}")
-    return LAND_SHP
+    print(f"  OSMData: cached at {shp}")
+    return shp
 
 
 def fetch_land_polygons(sll, nll, wll, ell):
@@ -178,15 +202,30 @@ def fetch_land_polygons(sll, nll, wll, ell):
     Returns a GeoDataFrame in EPSG:4326, geometries **clipped to the
     bbox**. The clipping is essential — OSMData ships continent-scale
     multipolygons; reprojecting those whole to a local TMerc produces
-    infinite coordinates. Clip in lat/lon first.
+    infinite coordinates. Clip in lat/lon first. The simplified dataset
+    ships in EPSG:3857, so we reproject the query bbox to read it and
+    bring the results back to 4326.
 
-    Auto-downloads the dataset on first call.
+    Auto-downloads the active dataset on first call.
     """
     import geopandas as gpd
     from shapely.geometry import box as shp_box
-    if not LAND_SHP.exists():
+    _, _, shp_name, epsg = _land_dataset()
+    shp = LAND_DIR / shp_name
+    if not shp.exists():
         download_land_polygons()
-    gdf = gpd.read_file(LAND_SHP, bbox=(wll, sll, ell, nll))
+
+    if epsg == 4326:
+        gdf = gpd.read_file(shp, bbox=(wll, sll, ell, nll))
+    else:
+        from pyproj import Transformer
+        t = Transformer.from_crs(4326, epsg, always_xy=True)
+        x_min, y_min = t.transform(wll, sll)
+        x_max, y_max = t.transform(ell, nll)
+        gdf = gpd.read_file(shp, bbox=(x_min, y_min, x_max, y_max))
+        if not gdf.empty:
+            gdf = gdf.to_crs(4326)
+
     if gdf.empty:
         return gdf
     bbox = shp_box(wll, sll, ell, nll)
