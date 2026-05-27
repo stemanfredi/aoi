@@ -74,7 +74,7 @@ class ChartStyle:
     isobath_color_min: str   = ISOBATH_MIN
     isobath_color_maj: str   = ISOBATH_MAJ
     isobath_lw_min:    float = 0.45
-    isobath_lw_maj:    float = 0.70
+    isobath_lw_maj:    float = 0.55
     terrain_color_min: str   = TERRAIN_MIN
     terrain_color_maj: str   = TERRAIN_MAJ
     terrain_lw_min:    float = 0.45
