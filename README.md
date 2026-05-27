@@ -39,6 +39,20 @@ placement is click-to-add on the map (the notebook's drag-to-move
 markers don't translate to folium; lat/lon is edited in the sidebar
 form instead).
 
+**Cloud deploy** ([Streamlit Community Cloud](https://share.streamlit.io)):
+point a new app at `app.py`, and in Secrets set
+`AOI_SIMPLIFIED_LAND = "1"` — the full land dataset (~1.3 GB) won't fit
+the free tier's disk, so the engine falls back to the ~12 MB simplified
+coastline (coarser, but it boots). Optionally add `OPENTOPOGRAPHY_API_KEY`
+for terrain.
+
+> **Deployed apps are public by default** — anyone with the URL can open
+> the app, render, and download PNGs, and every visitor shares your
+> single instance and your OpenTopography quota. To restrict access, set
+> a viewer allowlist under the app's **Settings → Sharing** (a private
+> GitHub repo hides the *code*, but the running app stays URL-reachable
+> until you set the allowlist).
+
 ### Optional: 30 m land-terrain contours
 
 The chart renders without this. For topographic detail on the land
